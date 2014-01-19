@@ -19,13 +19,16 @@ class TL:
 
     def updateCombo(self, w, data=None):
         if not w.get_text() == "":
-            name = tuple(re.split(" ", w.get_text().lower()))
+            #name = tuple(re.split(" ", w.get_text().lower()))
+            #for n in self.tldb.names:
+            #    if re.search("^" + name[0], n[0].lower()):
+            #        self.cbox.set_active(self.tldb.names.index(n))
+            #    elif len(name) == 2 and \
+            #        re.search(name[1], n[0].lower()):
+            #        self.cbox.set_active(self.tldb.names.index(n))
+            name = w.get_text().lower()
             for n in self.tldb.names:
-                if re.search("^" + name[0], n[0].lower()):
-                    self.cbox.set_active(self.tldb.names.index(n))
-                elif len(name) == 2 and \
-                     re.search(name[1], n[0].lower()):
-
+                if re.match(name, ' '.join(n).lower()):
                     self.cbox.set_active(self.tldb.names.index(n))
         else:
             self.cbox.set_active(-1)

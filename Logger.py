@@ -25,12 +25,13 @@ class Logger:
     def initNames(self):
         tempfname = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            "RoboticsNames.csv")
+            "people.csv")
         namesfile = open(tempfname, "r")
 
         for line in namesfile.readlines():
             temp = re.split(",", line)
-            temp[1] = temp[1][:-2] # strip the \r\n
+            # strip the newline
+            temp[1] = temp[1].rstrip()
             self.names.append(tuple(temp))
 
         self.names = sorted(self.names, key=lambda x: x[1])
@@ -53,6 +54,7 @@ class Logger:
     
     def getLastAction (self, first, last):
         self.c.execute("SELECT * FROM members WHERE " + \
+
                        "first=(?) AND last=(?)", [first, last])
         self.conn.commit()
 
@@ -78,7 +80,7 @@ class Logger:
 
     def addNewMember(self, first, last):
         fh = open(os.path.join(os.path.dirname(__file__),
-                  "RoboticsNames.csv"), "a")
+                  "people.csv"), "a")
         fh.write(first + "," + last + "\n")
         fh.close()
 
