@@ -35,15 +35,16 @@ class TL:
 
     def button_clicked(self, w, data=None):
         name = self.tldb.names[self.cbox.get_active()]
-        lastaction = self.tldb.getLastAction(name[0], name[1])
-        if lastaction == "in":
-            self.tldb.log(name[0], name[1], "out")
-        elif lastaction == "out":
-            self.tldb.log(name[0], name[1], "in")
-        else:
-            self.tldb.log(name[0], name[1], "in")
+        if self.cbox.get_active() != -1:
+            lastaction = self.tldb.getLastAction(name[0], name[1])
+            if lastaction == "in":
+                self.tldb.log(name[0], name[1], "out")
+            elif lastaction == "out":
+                self.tldb.log(name[0], name[1], "in")
+            else:
+                self.tldb.log(name[0], name[1], "in")
 
-        self.updateLogButton(self.cbox)
+            self.updateLogButton(self.cbox)
 
     def createCombo(self):
         self.cbox = gtk.combo_box_new_text()
@@ -100,6 +101,10 @@ class TL:
         self.adminmenu.append(self.addnewmemberitem)
         self.adminmenu.append(self.logoutallitem)
 
+        self.loggedinitem = gtk.MenuItem("List Logged In Members")
+        self.loggedinitem.connect("activate", self.listloggedin)
+        self.adminmenu.append(self.loggedinitem)
+
         self.menubar.append(self.adminitem)
 
     def logOutAll(self, w, data=None):
@@ -142,6 +147,29 @@ class TL:
                            newname[0] + " " + newname[1]) 
         self.newmemberdialog.destroy()
         message.run()
+        
+    def clearSearch(self, w, data=None):
+        self.button_clicked(w, data)
+        self.highlightText(self.searchEntry)
+
+    def highlightText(self, w, ev=None, data=None):
+        w.select_region(0, -1)
+
+    def listloggedin(self, w, data=None):
+        loggedin = self.tldb.getAllLoggedIn()
+
+        self.loggedindialog = gtk.Dialog(title="Logged in Members", flags=gtk.DIALOG_MODAL)
+
+        if len(loggedin) > 0:
+            for name in loggedin:
+                self.loggedindialog.vbox.pack_start(gtk.CheckButton(label=name[0] + " " + name[1]))
+        else:
+            self.loggedindialog.vbox.pack_start(gtk.Label("Nobody logged in."))
+
+        self.loggedinbutton = gtk.Button("Okay")
+        self.loggedinbutton.connect("clicked", lambda x: self.loggedindialog.destroy())
+        self.loggedindialog.vbox.pack_start(self.loggedinbutton)
+        self.loggedindialog.show_all()
 
     def __init__(self, tldb):
         self.tldb = tldb
@@ -157,6 +185,7 @@ class TL:
         self.mainvb.add(gtk.Label(""))
 
         self.searchhb = gtk.HBox(False, 0)
+
         self.mainvb.pack_start(self.searchhb, False)
         
         self.searchhb.pack_start(gtk.Label(""))
@@ -166,6 +195,8 @@ class TL:
 
         self.searchEntry = gtk.Entry(max=0)
         self.searchEntry.connect("changed", self.updateCombo)
+        self.searchEntry.connect("activate", self.clearSearch)
+        self.searchEntry.connect("focus", self.highlightText)
         self.searchEntry.modify_font(pango.FontDescription("38"))
         self.searchhb.pack_start(self.searchEntry)
         self.searchhb.pack_start(gtk.Label(""))
