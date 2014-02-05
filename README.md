@@ -7,6 +7,7 @@ Requires PyGTK and sqlite3, and Python 2.7.
 * Tracks time in a sqlite database.
 * Supports adding members from inside the application.
 * "Log Out All" button, for when people forget.
+* List Logged in Members button, with check boxes for easier accounting.
 
 ## Set Up
 * Download the .zip and extract somewhere.
