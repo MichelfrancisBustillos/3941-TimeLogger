@@ -54,7 +54,6 @@ class Logger:
     
     def getLastAction (self, first, last):
         self.c.execute("SELECT * FROM members WHERE " + \
-
                        "first=(?) AND last=(?)", [first, last])
         self.conn.commit()
 
@@ -83,6 +82,14 @@ class Logger:
                   "people.csv"), "a")
         fh.write(first + "," + last + "\n")
         fh.close()
+    
+    def getAllLoggedIn(self):
+        loggedin = []
+        for name in self.names:
+            if self.getLastAction(name[0], name[1]) == "in":
+                loggedin.append(name)
+
+        return loggedin
 
 if __name__ == "__main__":
     logger = Logger()
